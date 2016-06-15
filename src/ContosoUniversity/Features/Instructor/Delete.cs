@@ -5,9 +5,9 @@
     using System.Data.Entity;
     using System.Linq;
     using System.Threading.Tasks;
+    using AutoMapper;
     using DAL;
     using FluentValidation;
-    using Infrastructure.Mapping;
     using MediatR;
     using Models;
 
@@ -44,15 +44,17 @@
         public class QueryHandler : IAsyncRequestHandler<Query, Command>
         {
             private readonly SchoolContext _db;
+            private readonly MapperConfiguration _config;
 
-            public QueryHandler(SchoolContext db)
+            public QueryHandler(SchoolContext db, MapperConfiguration config)
             {
                 _db = db;
+                _config = config;
             }
 
             public async Task<Command> Handle(Query message)
             {
-                return await _db.Instructors.Where(i => i.ID == message.Id).ProjectToSingleOrDefaultAsync<Command>();
+                return await _db.Instructors.Where(i => i.ID == message.Id).ProjectToSingleOrDefaultAsync<Command>(_config);
             }
         }
 
